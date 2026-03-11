@@ -40,18 +40,29 @@ spacy_wiktionary_case_mapping = {
 }
 
 VERY_OFTEN_WRONG_WORDS = ["замер", "утра", "часа", "потом"]
+DATA_DIR_ENV_VAR = "RUSSIAN_TEXT_STRESSER_DATA_DIR"
+
+
+def _get_data_dir() -> Path:
+    data_dir = os.environ.get(DATA_DIR_ENV_VAR)
+    if data_dir:
+        path = Path(data_dir)
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+    return Path(__file__).parent
 
 
 class RussianDictionary:
     def __init__(self, db_file: str, simple_cases_file: Optional[str]) -> None:
-        russian_dict_path = Path(__file__).parent / db_file
+        data_dir = _get_data_dir()
+        russian_dict_path = data_dir / db_file
         # If russian_dict.db doesn't exist, download it
         if not russian_dict_path.exists():
             print("Russian dictionary not found. Downloading...")
             self.download_data()
 
         if simple_cases_file is not None:
-            simple_cases_path = Path(__file__).parent / simple_cases_file
+            simple_cases_path = data_dir / simple_cases_file
             if simple_cases_path.exists():
                 with open(simple_cases_path, "rb") as f:
                     self.simple_cases: dict[str, str] = pickle.load(f)
@@ -68,8 +79,8 @@ class RussianDictionary:
         # Download the file from the URL https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/russian_dict.zip
 
         url = "https://github.com/Vuizur/add-stress-to-epub/releases/download/v1.0.1/russian_dict.zip"
-        file_name = Path(__file__).parent / "russian_dict.zip"
-        russian_dict_path = Path(__file__).parent
+        russian_dict_path = _get_data_dir()
+        file_name = russian_dict_path / "russian_dict.zip"
 
         # Download the file
         urllib.request.urlretrieve(url, file_name)
