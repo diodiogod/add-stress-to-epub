@@ -52,8 +52,11 @@ class RussianDictionary:
 
         if simple_cases_file is not None:
             simple_cases_path = Path(__file__).parent / simple_cases_file
-            with open(simple_cases_path, "rb") as f:
-                self.simple_cases: dict[str, str] = pickle.load(f)
+            if simple_cases_path.exists():
+                with open(simple_cases_path, "rb") as f:
+                    self.simple_cases: dict[str, str] = pickle.load(f)
+            else:
+                self.simple_cases = {}
         else:
             self.simple_cases = {}
 

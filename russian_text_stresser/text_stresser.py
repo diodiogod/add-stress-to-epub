@@ -7,8 +7,9 @@ from stressed_cyrillic_tools import (
 from russian_text_stresser.russian_dictionary import RussianDictionary
 try:
     from russian_text_stresser.gpt3_WSD import LocalLLM, WordSenseDisambiguator
-except ImportError:
-    pass
+except Exception:
+    LocalLLM = None
+    WordSenseDisambiguator = None
 
 
 class RussianTextStresser:
